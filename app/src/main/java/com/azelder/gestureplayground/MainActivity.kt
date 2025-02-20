@@ -13,12 +13,13 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.gestures.verticalDrag
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GesturePlaygroundTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    GesturesPractice(modifier = Modifier.padding(innerPadding))
+                    GesturesPractice(innerPaddingValues = innerPadding)
                 }
             }
         }
@@ -58,27 +59,37 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GesturesPractice(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    innerPaddingValues: PaddingValues
 ) {
-    // the canvas for the screen
-    Box(
+    // the backdrop for the screen
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White),
-        contentAlignment = Alignment.Center,
+            .background(Color.White)
+            .padding(innerPaddingValues),
+        horizontalAlignment = Alignment.CenterHorizontally,
     )
     {
-//        TransformablePractice()
-//        AnimationDecayPractice()
-//        Tilt2Dto3D()
-        GestureTransform3D()
+        item {
+            TransformablePractice()
+            Spacer(modifier = Modifier.padding(16.dp))
+        }
+        item {
+            Tilt2Dto3D()
+            Spacer(modifier = Modifier.padding(16.dp))
+        }
+        item {
+            GestureTransform3D()
+            Spacer(modifier = Modifier.padding(16.dp))
+        }
     }
 }
 
 @Preview
 @Composable
 fun GesturesPracticePreview() {
-    GesturesPractice()
+    GesturesPractice(innerPaddingValues = PaddingValues(0.dp))
 }
 
 @Composable
@@ -94,6 +105,7 @@ private fun TransformablePractice() {
     // the object to manipulate
     Box(
         modifier = Modifier
+            .padding(16.dp)
             .graphicsLayer(
                 scaleX = scale,
                 scaleY = scale,
@@ -108,21 +120,10 @@ private fun TransformablePractice() {
 
     ) {
         Text(
-            text = "Which way is up?",
+            text = "Watch me transform!",
             color = Color.Black
         )
     }
-}
-
-@Composable
-fun AnimationDecayPractice() {
-
-}
-
-@Preview
-@Composable
-fun AnimationDecayPracticePreview() {
-
 }
 
 @Composable
@@ -130,15 +131,16 @@ fun Tilt2Dto3D() {
     var is3D by remember { mutableStateOf(false) }
 
     // Animate tilt transition (0° for 2D, 60° for 3D)
-    val rotationX by animateFloatAsState(targetValue = if (is3D) 240f else 0f, label = "rotationX")
+    val rotationX by animateFloatAsState(targetValue = if (is3D) 60f else 0f, label = "rotationX")
 
     // Camera distance (higher value for realistic 3D effect)
     val cameraDistance = 8f * LocalDensity.current.density
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
         // 3D Transformable Box
         Box(
@@ -153,7 +155,7 @@ fun Tilt2Dto3D() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (is3D) "3D View" else "2D View",
+                text = if (is3D) "3D Click Me" else "2D Click Me",
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
@@ -185,7 +187,8 @@ fun GestureTransform3D() {
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .size(200.dp)
+            .padding(16.dp)
             .pointerInput(Unit) {
                 coroutineScope {
                     while (true) {
@@ -222,7 +225,7 @@ fun GestureTransform3D() {
     ) {
         Box(
             modifier = Modifier
-                .size(300.dp)
+                .size(200.dp)
                 .graphicsLayer(
                     rotationX = rotationDegree.value,  // Tilt effect
                     cameraDistance = cameraDistance
